@@ -1,0 +1,19 @@
+{
+   "folders": [
+      {
+         "name": "Pokedexfi App",
+         "path": "pokedexfi"
+      },
+      {
+         "name": "Dexfi UI",
+         "path": "dexfi_ui"
+      }
+   ],
+   "settings": {
+      "files.exclude": {
+         "**/.dart_tool":true,
+         "**/.idea":true,
+         "**/build":true
+      }
+   },
+}
