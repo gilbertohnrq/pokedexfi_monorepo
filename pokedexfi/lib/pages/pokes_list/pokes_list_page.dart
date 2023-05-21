@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dexfi_ui/dexfi_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pokedexfi/core/routes/app_router.dart';
+import 'package:pokedexfi/pages/details/args/poke_details_args.dart';
 import 'package:pokedexfi/pages/pokes_list/cubit/pokes_list_cubit.dart';
 import 'package:pokedexfi/pages/pokes_list/widgets/poke_card.dart';
 
@@ -106,6 +108,7 @@ class _PokesListPageState extends State<PokesListPage> {
                       ),
                     ),
                     GridView.builder(
+                      physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.symmetric(
                         horizontal: DexSpacings.s12,
                         vertical: DexSpacings.s24,
@@ -121,7 +124,18 @@ class _PokesListPageState extends State<PokesListPage> {
                       itemBuilder: (context, index) {
                         final pokemon = state.pokemons[index];
 
-                        return PokeCard(pokemon);
+                        return PokeCard(
+                          pokemon,
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                              Routes.detailsPage.route,
+                              arguments: PokeDetailsArgs(
+                                pokemon: state.pokemons,
+                                index: index,
+                              ),
+                            );
+                          },
+                        );
                       },
                     ),
                   ],

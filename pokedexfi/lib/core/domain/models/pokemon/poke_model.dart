@@ -2,6 +2,7 @@ import 'package:pokedexfi/core/domain/models/pokemon/ability_model.dart';
 import 'package:pokedexfi/core/domain/models/pokemon/other_model.dart';
 import 'package:pokedexfi/core/domain/models/pokemon/stat_model.dart';
 import 'package:pokedexfi/core/domain/models/pokemon/type_model.dart';
+import 'package:pokedexfi/core/extensions/string_extensions.dart';
 
 class Poke {
   final List<Ability> abilities;
@@ -32,6 +33,14 @@ class Poke {
     } else {
       return '#$id';
     }
+  }
+
+  String get image {
+    return other.officialArtwork.frontDefault ?? '';
+  }
+
+  String get formattedName {
+    return name.capitalize();
   }
 
   static Poke fromMap(Map<String, dynamic> map) {

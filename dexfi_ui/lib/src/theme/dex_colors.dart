@@ -18,7 +18,7 @@ class DexColors {
   static const Color flying = Color(0xFFA891EC);
   static const Color ghost = Color(0xFF70559B);
   static const Color normal = Color(0xFFAAA67F);
-  static const Color grass = Color(0xFFAAA67F);
+  static const Color grass = Color(0xFF74CB48);
   static const Color ground = Color(0xFFDEC16B);
   static const Color ice = Color(0xFF9AD6DF);
   static const Color psychic = Color(0xFFFB5584);

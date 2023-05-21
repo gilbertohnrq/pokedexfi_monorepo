@@ -1,10 +1,11 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:pokedexfi/pages/details/args/poke_details_args.dart';
 import 'package:pokedexfi/pages/pokes_list/pokes_list_page.dart';
 
 import '../../pages/error_page.dart';
-import '../../pages/poke_details_page.dart';
+import '../../pages/details/poke_details_page.dart';
 
 enum Routes {
   listPage,
@@ -15,7 +16,11 @@ enum Routes {
 Map<String, WidgetBuilder> routes = {
   '/': (context) => routes[Routes.listPage.route]!(context),
   Routes.listPage.route: (context) => const PokesListPage(),
-  Routes.detailsPage.route: (context) => const PokeDetailsPage(),
+  Routes.detailsPage.route: (context) {
+    final args = ModalRoute.of(context)!.settings.arguments as PokeDetailsArgs;
+
+    return PokeDetailsPage(args);
+  },
   Routes.errorPage.route: (context) => const ErrorPage(),
 };
 

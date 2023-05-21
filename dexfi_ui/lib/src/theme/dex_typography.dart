@@ -34,12 +34,13 @@ extension DexTypography on Text {
     required FontWeight fontWeight,
     required double height,
     TextStyle? mergeStyle,
+    Color? color,
   }) {
     return TextStyle(
       fontSize: fontSize,
       fontWeight: fontWeight,
       height: height,
-      color: DexColors.mediumGray,
+      color: color ?? DexColors.mediumGray,
       fontStyle: FontStyle.normal,
       fontFamily: 'Poppins',
     ).merge(mergeStyle);
@@ -52,81 +53,89 @@ extension DexTypography on Text {
     );
   }
 
-  Text headlineBold({TextStyle? style}) {
+  Text headlineBold({TextStyle? style, Color? color}) {
     TextStyle defaultStyle = _setDefaultStyle(
-      fontSize: TypographyFontSize.headline,
-      fontWeight: TypographyFontWeight.bold,
-      height: TypographyLineHeight.headline,
-    ).merge(style);
+            fontSize: TypographyFontSize.headline,
+            fontWeight: TypographyFontWeight.bold,
+            height: TypographyLineHeight.headline,
+            color: color)
+        .merge(style);
 
     return _returnTextTypography(textStyle: defaultStyle);
   }
 
-  Text subtitle3Bold({TextStyle? style}) {
+  Text subtitle3Bold({TextStyle? style, Color? color}) {
     TextStyle defaultStyle = _setDefaultStyle(
-      fontSize: TypographyFontSize.subtitle3,
-      fontWeight: TypographyFontWeight.bold,
-      height: TypographyLineHeight.subtitle,
-    ).merge(style);
+            fontSize: TypographyFontSize.subtitle3,
+            fontWeight: TypographyFontWeight.bold,
+            height: TypographyLineHeight.subtitle,
+            color: color)
+        .merge(style);
 
     return _returnTextTypography(textStyle: defaultStyle);
   }
 
-  Text subtitle1Bold({TextStyle? style}) {
+  Text subtitle1Bold({TextStyle? style, Color? color}) {
     TextStyle defaultStyle = _setDefaultStyle(
       fontSize: TypographyFontSize.subtitle1,
       fontWeight: TypographyFontWeight.bold,
       height: TypographyLineHeight.subtitle,
+      color: color,
     ).merge(style);
 
     return _returnTextTypography(textStyle: defaultStyle);
   }
 
-  Text subtitle2Bold({TextStyle? style}) {
+  Text subtitle2Bold({TextStyle? style, Color? color}) {
     TextStyle defaultStyle = _setDefaultStyle(
       fontSize: TypographyFontSize.subtitle2,
       fontWeight: TypographyFontWeight.bold,
       height: TypographyLineHeight.subtitle,
+      color: color,
     ).merge(style);
 
     return _returnTextTypography(textStyle: defaultStyle);
   }
 
-  Text body3Regular({TextStyle? style}) {
+  Text body3Regular({TextStyle? style, Color? color}) {
     TextStyle defaultStyle = _setDefaultStyle(
       fontSize: TypographyFontSize.body3,
       fontWeight: TypographyFontWeight.regular,
       height: TypographyLineHeight.body,
+      color: color,
     ).merge(style);
 
     return _returnTextTypography(textStyle: defaultStyle);
   }
 
-  Text body1Regular({TextStyle? style}) {
+  Text body1Regular({TextStyle? style, Color? color}) {
     TextStyle defaultStyle = _setDefaultStyle(
       fontSize: TypographyFontSize.body1,
       fontWeight: TypographyFontWeight.regular,
       height: TypographyLineHeight.body,
+      color: color,
     ).merge(style);
 
     return _returnTextTypography(textStyle: defaultStyle);
   }
 
-  Text body2Regular({TextStyle? style}) {
+  Text body2Regular({TextStyle? style, Color? color}) {
     TextStyle defaultStyle = _setDefaultStyle(
       fontSize: TypographyFontSize.body2,
       fontWeight: TypographyFontWeight.regular,
       height: TypographyLineHeight.body,
+      color: color,
     ).merge(style);
 
     return _returnTextTypography(textStyle: defaultStyle);
   }
 
-  Text captionRegular({TextStyle? style}) {
+  Text captionRegular({TextStyle? style, Color? color}) {
     TextStyle defaultStyle = _setDefaultStyle(
       fontSize: TypographyFontSize.caption,
       fontWeight: TypographyFontWeight.regular,
       height: TypographyLineHeight.caption,
+      color: color,
     ).merge(style);
 
     return _returnTextTypography(textStyle: defaultStyle);
