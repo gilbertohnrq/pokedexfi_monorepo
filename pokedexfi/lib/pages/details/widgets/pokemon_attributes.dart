@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:pokedexfi/core/extensions/string_extensions.dart';
 import 'package:pokedexfi/core/widgets/vector.dart';
 
-class PokemonAttributesWidget extends StatelessWidget {
+class PokemonAttributes extends StatelessWidget {
   final Vectors? icon;
   final Color? iconColor;
   final List<String> moves;
   final String label;
 
-  const PokemonAttributesWidget({
+  const PokemonAttributes({
     Key? key,
     this.icon,
     this.iconColor,

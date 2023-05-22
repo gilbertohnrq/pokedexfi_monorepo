@@ -1,12 +1,13 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dexfi_ui/dexfi_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:pokedexfi/core/domain/enums/poke_stats.dart';
 
 import 'package:pokedexfi/core/extensions/string_extensions.dart';
 import 'package:pokedexfi/core/widgets/vector.dart';
 import 'package:pokedexfi/pages/details/args/poke_details_args.dart';
-import 'package:pokedexfi/pages/details/widgets/pokemon_attributes_widget.dart';
+import 'package:pokedexfi/pages/details/widgets/pokemon_attributes.dart';
+import 'package:pokedexfi/pages/details/widgets/progress_bar.dart';
 
 class PokeDetailsPage extends StatelessWidget {
   final PokeDetailsArgs args;
@@ -133,7 +134,7 @@ class PokeDetailsPage extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Expanded(
-                                  child: PokemonAttributesWidget(
+                                  child: PokemonAttributes(
                                     icon: Vectors.weight,
                                     iconColor: DexColors.darkText,
                                     moves: [poke.formattedWeight],
@@ -142,7 +143,7 @@ class PokeDetailsPage extends StatelessWidget {
                                 ),
                                 const DexVerticalDivider(),
                                 Expanded(
-                                  child: PokemonAttributesWidget(
+                                  child: PokemonAttributes(
                                     icon: Vectors.straighten,
                                     iconColor: DexColors.darkText,
                                     moves: [poke.formattedHeight],
@@ -151,7 +152,7 @@ class PokeDetailsPage extends StatelessWidget {
                                 ),
                                 const DexVerticalDivider(),
                                 Expanded(
-                                  child: PokemonAttributesWidget(
+                                  child: PokemonAttributes(
                                     moves: poke.abilities
                                         .take(2)
                                         .map((ability) => ability.ability.name)
@@ -161,6 +162,67 @@ class PokeDetailsPage extends StatelessWidget {
                                 ),
                               ],
                             ),
+                          ),
+                          const SizedBox(height: DexSpacings.s16),
+                          const Text(
+                            'There is a plant seed on its back right from the day this Pokémon is born. The seed slowly grows larger.',
+                            textAlign: TextAlign.justify,
+                          ).body3Regular(color: DexColors.darkText),
+                          const SizedBox(height: DexSpacings.s16),
+                          Column(
+                            children: [
+                              const Text('Base Stats').subtitle1Bold(
+                                color: poke.types.first.color,
+                              ),
+                              const SizedBox(height: DexSpacings.s16),
+                              Table(
+                                columnWidths: const {
+                                  0: FlexColumnWidth(),
+                                  1: FlexColumnWidth(1),
+                                  2: FlexColumnWidth(5),
+                                },
+                                defaultVerticalAlignment:
+                                    TableCellVerticalAlignment.middle,
+                                children: [
+                                  ...poke.stats.map(
+                                    (e) => TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                                right: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.grey[
+                                                        400]!)), // Define a borda direita para a célula interna
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 10),
+                                            child: Align(
+                                              alignment: Alignment.centerRight,
+                                              child: Text(e.pokeStat.title)
+                                                  .subtitle3Bold(
+                                                color: poke.types.first.color,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Center(
+                                          child: Text(e.baseStatFormatted)
+                                              .body3Regular(
+                                            color: DexColors.darkText,
+                                          ),
+                                        ),
+                                        AnimatedProgressBar(
+                                          value: e.baseStat?.toDouble() ?? 0,
+                                          color: poke.types.first.color!,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ],
                       ),
