@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:dexfi_ui/dexfi_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokedexfi/core/routes/app_router.dart';
 import 'package:pokedexfi/pages/details/args/poke_details_args.dart';
@@ -25,8 +25,7 @@ class _PokesListPageState extends State<PokesListPage> {
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels > _scrollController.position.maxScrollExtent * 0.7) {
         cubit.fetchMorePokemons();
       }
     });
@@ -59,8 +58,7 @@ class _PokesListPageState extends State<PokesListPage> {
             children: [
               Row(
                 children: [
-                  const Vector(Vectors.pokeball,
-                      size: 24, color: DexColors.white),
+                  const Vector(Vectors.pokeball, size: 24, color: DexColors.white),
                   const SizedBox(width: DexSpacings.s16),
                   const Text('Pokédex').headlineBold(
                     style: const TextStyle(color: DexColors.white),
@@ -83,13 +81,10 @@ class _PokesListPageState extends State<PokesListPage> {
                     ),
                     leading: const Icon(Icons.search, color: DexColors.primary),
                     constraints: BoxConstraints(
-                      maxHeight: orientation == Orientation.portrait
-                          ? size.height * 0.05
-                          : size.height * 0.1,
+                      maxHeight: orientation == Orientation.portrait ? size.height * 0.05 : size.height * 0.1,
                       maxWidth: size.width * 0.7778,
                     ),
-                    backgroundColor:
-                        const MaterialStatePropertyAll(DexColors.white),
+                    backgroundColor: const MaterialStatePropertyAll(DexColors.white),
                     hintText: 'Search',
                     hintStyle: MaterialStateProperty.all(
                       const Text('').body3Regular().style,
@@ -109,9 +104,7 @@ class _PokesListPageState extends State<PokesListPage> {
           }
 
           if (state is LoadingMore || state is Loaded) {
-            List<Poke> pokemons = state is LoadingMore
-                ? state.pokemons
-                : (state as Loaded).pokemons;
+            List<Poke> pokemons = state is LoadingMore ? state.pokemons : (state as Loaded).pokemons;
             return RefreshIndicator.adaptive(
               backgroundColor: DexColors.white,
               color: DexColors.primary,
@@ -134,18 +127,15 @@ class _PokesListPageState extends State<PokesListPage> {
                         horizontal: DexSpacings.s12,
                         vertical: DexSpacings.s24,
                       ),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         crossAxisSpacing: DexSpacings.s8,
                         mainAxisSpacing: DexSpacings.s8,
                       ),
-                      itemCount:
-                          pokemons.length + (state is LoadingMore ? 1 : 0),
+                      itemCount: pokemons.length + (state is LoadingMore ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index >= pokemons.length) {
-                          return const Center(
-                              child: CircularProgressIndicator());
+                          return const Center(child: CircularProgressIndicator());
                         }
 
                         final pokemon = pokemons[index];
@@ -156,7 +146,7 @@ class _PokesListPageState extends State<PokesListPage> {
                             Navigator.of(context).pushNamed(
                               Routes.detailsPage.route,
                               arguments: PokeDetailsArgs(
-                                pokemon: pokemons,
+                                listPokes: pokemons,
                                 index: index,
                               ),
                             );

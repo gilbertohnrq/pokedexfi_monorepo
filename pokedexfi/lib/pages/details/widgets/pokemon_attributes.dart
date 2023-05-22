@@ -20,7 +20,9 @@ class PokemonAttributes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final moveTexts = moves.map((move) {
-      return Text(move.capitalize()).body3Regular(color: DexColors.darkText);
+      return Text(
+        move.capitalize()
+      ).body3Regular(color: DexColors.darkText);
     }).toList();
 
     return Container(

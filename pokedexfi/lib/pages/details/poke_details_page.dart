@@ -2,22 +2,64 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dexfi_ui/dexfi_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:pokedexfi/core/domain/enums/poke_stats.dart';
-
 import 'package:pokedexfi/core/extensions/string_extensions.dart';
 import 'package:pokedexfi/core/widgets/vector.dart';
 import 'package:pokedexfi/pages/details/args/poke_details_args.dart';
 import 'package:pokedexfi/pages/details/widgets/pokemon_attributes.dart';
 import 'package:pokedexfi/pages/details/widgets/progress_bar.dart';
 
-class PokeDetailsPage extends StatelessWidget {
+import '../../core/domain/models/pokemon/poke_model.dart';
+
+class PokeDetailsPage extends StatefulWidget {
   final PokeDetailsArgs args;
 
   const PokeDetailsPage(this.args, {Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final poke = args.pokemon[args.index];
+  State<PokeDetailsPage> createState() => _PokeDetailsPageState();
+}
 
+class _PokeDetailsPageState extends State<PokeDetailsPage> {
+  late final PageController _pageController;
+  late Poke poke;
+  int currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    poke = widget.args.listPokes[widget.args.index];
+    currentPage = widget.args.index;
+    _pageController = PageController(initialPage: currentPage);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
+  }
+
+  void nextPokemon() {
+    if (currentPage < widget.args.listPokes.length - 1) {
+      currentPage++;
+      setState(() {
+        poke = widget.args.listPokes[currentPage];
+      });
+      _pageController.jumpToPage(currentPage);
+    }
+  }
+
+  void previousPokemon() {
+    if (currentPage > 0) {
+      currentPage--;
+      setState(() {
+        poke = widget.args.listPokes[currentPage];
+      });
+      _pageController.jumpToPage(currentPage);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: poke.types.first.color,
       extendBodyBehindAppBar: true,
@@ -70,6 +112,8 @@ class PokeDetailsPage extends StatelessWidget {
           Positioned.fill(
             top: DexSpacings.s76,
             child: PageView(
+              controller: _pageController,
+              physics: const ClampingScrollPhysics(),
               children: [
                 Stack(
                   children: [
@@ -191,10 +235,10 @@ class PokeDetailsPage extends StatelessWidget {
                                         Container(
                                           decoration: BoxDecoration(
                                             border: Border(
-                                                right: BorderSide(
-                                                    width: 1,
-                                                    color: Colors.grey[
-                                                        400]!)), // Define a borda direita para a célula interna
+                                              right: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.grey[400]!),
+                                            ),
                                           ),
                                           child: Padding(
                                             padding: const EdgeInsets.only(
@@ -238,6 +282,18 @@ class PokeDetailsPage extends StatelessWidget {
                         imageUrl: poke.image,
                         height: 200,
                         width: 200,
+                      ),
+                    ),
+                    Positioned(
+                      top: 104,
+                      right: DexSpacings.s24,
+                      child: InkWell(
+                        onTap: nextPokemon,
+                        child: const Icon(
+                          Icons.chevron_right,
+                          color: DexColors.white,
+                          size: 24,
+                        ),
                       ),
                     ),
                   ],

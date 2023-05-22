@@ -12,8 +12,9 @@ class PokesListCubit extends Cubit<PokesListState> {
 
   final _repository = getIt<PokedexRepository>();
   List<Poke> _pokemons = [];
-  int _offset = 0; // we will use this to keep track of our current page
-  final _limit = 20; // limit of pokemons per request, adjust as needed
+  int _offset = 0;
+  final _limit = 20;
+  final _lazyLoadLimit = 5;
 
   Future<void> getPokemons() async {
     try {
@@ -35,10 +36,10 @@ class PokesListCubit extends Cubit<PokesListState> {
       emit(LoadingMore(_pokemons));
 
       final additionalPokemons =
-          await _repository.getPokemonsByOffset(_offset, _limit);
+          await _repository.getPokemonsByOffset(_offset, _lazyLoadLimit);
 
       _pokemons = [..._pokemons, ...additionalPokemons];
-      _offset += _limit;
+      _offset += _lazyLoadLimit;
 
       emit(Loaded(_pokemons));
     } catch (e) {

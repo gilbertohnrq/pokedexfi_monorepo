@@ -26,7 +26,7 @@ class AnimatedProgressBar extends StatelessWidget {
         alignment: Alignment.centerLeft,
         child: TweenAnimationBuilder(
           tween: Tween<double>(begin: 0, end: value),
-          duration: const Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 700),
           builder: (context, double value, child) {
             return Container(
               width: value,
