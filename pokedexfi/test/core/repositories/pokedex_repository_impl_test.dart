@@ -4,14 +4,18 @@ import 'package:pokedexfi/core/domain/models/pokemon/pokemon_list_model.dart';
 import 'package:pokedexfi/core/repositories/pokedex_repository_impl.dart';
 
 import '../services/http/http_service_test.dart';
+import '../services/local_storage/local_storage_service_test.dart';
 
 void main() {
   late PokedexRepositoryImpl repository;
   late MockHttpService mockHttpService;
+  late MockLocalStorageService mockLocalStorageService;
 
   setUp(() {
     mockHttpService = MockHttpService();
-    repository = PokedexRepositoryImpl(mockHttpService);
+    mockLocalStorageService = MockLocalStorageService();
+    repository =
+        PokedexRepositoryImpl(mockHttpService, mockLocalStorageService);
   });
 
   group('PokedexRepositoryImpl', () {

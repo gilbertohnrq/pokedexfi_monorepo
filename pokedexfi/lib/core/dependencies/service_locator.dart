@@ -5,6 +5,7 @@ import 'package:pokedexfi/core/services/http/http_service.dart';
 import 'package:pokedexfi/core/services/http/http_service_impl.dart';
 import 'package:pokedexfi/core/services/local_storage/local_storage_service.dart';
 import 'package:pokedexfi/core/services/local_storage/local_storage_service_impl.dart';
+import 'package:pokedexfi/core/usecases/get_pokemons_usecase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../repositories/pokedex_repository_impl.dart';
@@ -26,7 +27,7 @@ class Locator {
 
     dio = Dio(options);
     dio.interceptors.add(DioHttpRequestRetrier(dio: dio));
-    createDependencies();
+    await createDependencies();
   }
 
   Future<void> createDependencies() async {
@@ -39,6 +40,11 @@ class Locator {
 
     //Repositories
     getIt.registerFactory<PokedexRepository>(
-        () => PokedexRepositoryImpl(getIt()));
+      () => PokedexRepositoryImpl(getIt(), getIt()),
+    );
+
+    //UseCases
+    getIt.registerFactory<GetPokemonsUseCase>(
+        () => GetPokemonsUseCase(getIt(), getIt()));
   }
 }

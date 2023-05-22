@@ -275,13 +275,26 @@ class _PokeDetailsPageState extends State<PokeDetailsPage> {
                     Align(
                       alignment: Alignment.topCenter,
                       child: CachedNetworkImage(
-                        imageBuilder: (context, imageProvider) => Opacity(
-                          opacity: poke.name == 'bulbasaur' ? 0.8 : 1,
-                          child: Image(image: imageProvider),
-                        ),
+                        imageBuilder: (context, imageProvider) =>
+                            Image(image: imageProvider),
                         imageUrl: poke.image,
                         height: 200,
                         width: 200,
+                      ),
+                    ),
+                    Visibility(
+                      visible: currentPage > 0,
+                      child: Positioned(
+                        top: 104,
+                        left: DexSpacings.s24,
+                        child: InkWell(
+                          onTap: previousPokemon,
+                          child: const Icon(
+                            Icons.chevron_left,
+                            color: DexColors.white,
+                            size: 24,
+                          ),
+                        ),
                       ),
                     ),
                     Positioned(
