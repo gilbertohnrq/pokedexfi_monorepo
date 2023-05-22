@@ -24,7 +24,7 @@ class PokeDetailsPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: Navigator.of(context).pop,
           icon: Icon(
             Icons.arrow_back,
             shadows: DexElevation.dropShadow2,
@@ -86,6 +86,7 @@ class PokeDetailsPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(DexRadius.r8),
                       ),
                       child: ListView(
+                        physics: const BouncingScrollPhysics(),
                         padding: const EdgeInsets.only(
                           top: 0,
                           bottom: DexSpacings.s20,

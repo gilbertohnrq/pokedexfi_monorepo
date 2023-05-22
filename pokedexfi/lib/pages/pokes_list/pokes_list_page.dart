@@ -6,6 +6,7 @@ import 'package:pokedexfi/pages/details/args/poke_details_args.dart';
 import 'package:pokedexfi/pages/pokes_list/cubit/pokes_list_cubit.dart';
 import 'package:pokedexfi/pages/pokes_list/widgets/poke_card.dart';
 
+import '../../core/domain/models/pokemon/poke_model.dart';
 import '../../core/widgets/loading.dart';
 import '../../core/widgets/vector.dart';
 
@@ -18,6 +19,24 @@ class PokesListPage extends StatefulWidget {
 
 class _PokesListPageState extends State<PokesListPage> {
   final PokesListCubit cubit = PokesListCubit();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        cubit.fetchMorePokemons();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +104,14 @@ class _PokesListPageState extends State<PokesListPage> {
       body: BlocBuilder<PokesListCubit, PokesListState>(
         bloc: cubit,
         builder: (context, state) {
-          if (state is Loading) {
+          if (state is Initial || state is Loading) {
             return const Center(child: LoadingWidget());
           }
 
-          if (state is Loaded) {
+          if (state is LoadingMore || state is Loaded) {
+            List<Poke> pokemons = state is LoadingMore
+                ? state.pokemons
+                : (state as Loaded).pokemons;
             return RefreshIndicator.adaptive(
               backgroundColor: DexColors.white,
               color: DexColors.primary,
@@ -106,6 +128,7 @@ class _PokesListPageState extends State<PokesListPage> {
                       ),
                     ),
                     GridView.builder(
+                      controller: _scrollController,
                       physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.symmetric(
                         horizontal: DexSpacings.s12,
@@ -113,14 +136,19 @@ class _PokesListPageState extends State<PokesListPage> {
                       ),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        // childAspectRatio: 0.8,
                         crossAxisCount: 3,
                         crossAxisSpacing: DexSpacings.s8,
                         mainAxisSpacing: DexSpacings.s8,
                       ),
-                      itemCount: state.pokemons.length,
+                      itemCount:
+                          pokemons.length + (state is LoadingMore ? 1 : 0),
                       itemBuilder: (context, index) {
-                        final pokemon = state.pokemons[index];
+                        if (index >= pokemons.length) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
+                        final pokemon = pokemons[index];
 
                         return PokeCard(
                           pokemon,
@@ -128,7 +156,7 @@ class _PokesListPageState extends State<PokesListPage> {
                             Navigator.of(context).pushNamed(
                               Routes.detailsPage.route,
                               arguments: PokeDetailsArgs(
-                                pokemon: state.pokemons,
+                                pokemon: pokemons,
                                 index: index,
                               ),
                             );

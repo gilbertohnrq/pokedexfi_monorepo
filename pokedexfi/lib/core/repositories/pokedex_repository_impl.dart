@@ -1,9 +1,9 @@
 import 'dart:developer';
 
-import 'package:pokedexfi/core/domain/models/pokemon/poke_model.dart';
 import 'package:pokedexfi/core/repositories/pokedex_repository.dart';
 
 import '../constants/app_constants.dart';
+import '../domain/models/pokemon/poke_model.dart';
 import '../domain/models/pokemon/pokemon_list_model.dart';
 import '../services/http/http_service.dart';
 
@@ -13,9 +13,9 @@ class PokedexRepositoryImpl implements PokedexRepository {
   PokedexRepositoryImpl(this._httpService);
 
   @override
-  Future<List<String>> getAllPokemons() async {
+  Future<List<String>> getAllPokemons({int limit = 20, int offset = 0}) async {
     try {
-      const url = '$kBaseUrl/pokemon/?limit=$limit';
+      final url = '$kBaseUrl/pokemon/?limit=$limit&offset=$offset';
       final response = await _httpService.get(url);
       final pokemonList =
           PokemonList.fromJson(Map<String, dynamic>.from(response.data));
@@ -27,9 +27,33 @@ class PokedexRepositoryImpl implements PokedexRepository {
   }
 
   @override
-  Future<List<Poke>> getPokemonsByNames() async {
+  Future<List<Poke>> getPokemonsByNames(
+      {int limit = 20, int offset = 0}) async {
     try {
-      final pokemonNames = await getAllPokemons();
+      final pokemonNames = await getAllPokemons(limit: limit, offset: offset);
+      final futurePokes = pokemonNames.map((name) async {
+        final url = '$kBaseUrl/pokemon/$name';
+        final response = await _httpService.get(url);
+        return Poke.fromMap(Map<String, dynamic>.from(response.data));
+      }).toList();
+
+      return Future.wait(futurePokes);
+    } catch (e, s) {
+      log(e.toString(), stackTrace: s, error: e);
+      throw Exception(e);
+    }
+  }
+
+  @override
+  Future<List<Poke>> getPokemonsByOffset(int offset, int limit) async {
+    try {
+      final url = '$kBaseUrl/pokemon/?offset=$offset&limit=$limit';
+      final response = await _httpService.get(url);
+      final pokemonList =
+          PokemonList.fromJson(Map<String, dynamic>.from(response.data));
+      final pokemonNames =
+          pokemonList.results.map((pokemon) => pokemon.name).toList();
+
       final futurePokes = pokemonNames.map((name) async {
         final url = '$kBaseUrl/pokemon/$name';
         final response = await _httpService.get(url);
