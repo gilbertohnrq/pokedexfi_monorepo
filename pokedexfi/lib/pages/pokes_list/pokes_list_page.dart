@@ -52,9 +52,7 @@ class _PokesListPageState extends State<PokesListPage> {
               Row(
                 children: [
                   SearchBar(
-                    onChanged: (value) {
-                      print(value);
-                    },
+                    onChanged: (value) {},
                     padding: const MaterialStatePropertyAll(
                       EdgeInsets.only(
                         bottom: DexSpacings.s2,

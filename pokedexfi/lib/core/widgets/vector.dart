@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedexfi/core/extensions/string_extensions.dart';
 
-enum Vectors { pokeball, pokePlaceholder }
+enum Vectors {
+  pokeball,
+  pokePlaceholder,
+  straighten,
+  weight,
+}
 
 class Vector extends StatelessWidget {
   const Vector(

@@ -43,16 +43,29 @@ class Poke {
     return name.capitalize();
   }
 
+  String get formattedHeight {
+    return '${height / 10} m';
+  }
+
+  String get formattedWeight {
+    return '${weight / 10} kg';
+  }
+
   static Poke fromMap(Map<String, dynamic> map) {
     return Poke(
-      abilities:
-          List<Ability>.from(map['abilities'].map((x) => Ability.fromMap(x))),
-      height: map['height'],
-      id: map['id'],
-      name: map['name'],
-      stats: List<Stat>.from(map['stats'].map((x) => Stat.fromMap(x))),
-      types: List<Type>.from(map['types'].map((x) => Type.fromMap(x))),
-      weight: map['weight'],
+      abilities: map['abilities'] != null
+          ? List<Ability>.from(map['abilities'].map((x) => Ability.fromMap(x)))
+          : [],
+      height: map['height'] ?? 0,
+      id: map['id'] ?? 0,
+      name: map['name'] ?? '',
+      stats: map['stats'] != null
+          ? List<Stat>.from(map['stats'].map((x) => Stat.fromMap(x)))
+          : [],
+      types: map['types'] != null
+          ? List<Type>.from(map['types'].map((x) => Type.fromMap(x)))
+          : [],
+      weight: map['weight'] ?? 0,
       other: map['sprites']['other'] != null
           ? Other.fromMap(map['sprites']['other'])
           : Other.empty(),

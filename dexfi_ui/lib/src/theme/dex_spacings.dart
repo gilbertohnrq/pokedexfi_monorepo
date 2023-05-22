@@ -17,4 +17,5 @@ class DexSpacings {
   static const double s56 = 56;
   static const double s64 = 64;
   static const double s72 = 72;
+  static const double s76 = 76;
 }
