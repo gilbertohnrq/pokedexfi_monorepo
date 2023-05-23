@@ -1,13 +1,21 @@
+import 'package:dexfi_ui/dexfi_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:pokedexfi/core/widgets/vector.dart';
 
 class LoadingWidget extends StatelessWidget {
-  const LoadingWidget({Key? key}) : super(key: key);
+  const LoadingWidget({
+    Key? key,
+    this.color = DexColors.white,
+    this.size = 100,
+  }) : super(key: key);
+
+  final Color color;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
-    return const Vector(Vectors.pokeball, size: 100)
+    return Vector(Vectors.pokeball, size: size, color: color)
         .animate(
           autoPlay: true,
           onComplete: (controller) {

@@ -1,5 +1,6 @@
 import 'package:dexfi_ui/dexfi_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokedexfi/core/routes/app_router.dart';
 import 'package:pokedexfi/pages/details/args/poke_details_args.dart';
@@ -26,7 +27,9 @@ class _PokesListPageState extends State<PokesListPage> {
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >
-          _scrollController.position.maxScrollExtent * 0.7) {
+              _scrollController.position.maxScrollExtent * 0.7 &&
+          _scrollController.position.userScrollDirection ==
+              ScrollDirection.reverse) {
         cubit.fetchMorePokemons();
       }
     });
@@ -130,9 +133,13 @@ class _PokesListPageState extends State<PokesListPage> {
                     GridView.builder(
                       controller: _scrollController,
                       physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: DexSpacings.s12,
-                        vertical: DexSpacings.s24,
+                      padding: EdgeInsets.only(
+                        left: DexSpacings.s12,
+                        right: DexSpacings.s12,
+                        top: DexSpacings.s24,
+                        bottom: state is LoadingMore
+                            ? DexSpacings.s56
+                            : DexSpacings.s24,
                       ),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -140,14 +147,8 @@ class _PokesListPageState extends State<PokesListPage> {
                         crossAxisSpacing: DexSpacings.s8,
                         mainAxisSpacing: DexSpacings.s8,
                       ),
-                      itemCount:
-                          pokemons.length + (state is LoadingMore ? 1 : 0),
+                      itemCount: pokemons.length,
                       itemBuilder: (context, index) {
-                        if (index >= pokemons.length) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-
                         final pokemon = pokemons[index];
 
                         return PokeCard(
@@ -164,6 +165,20 @@ class _PokesListPageState extends State<PokesListPage> {
                         );
                       },
                     ),
+                    if (state is LoadingMore)
+                      const Positioned.fill(
+                        bottom: DexSpacings.s8,
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: EdgeInsets.only(top: DexSpacings.s72),
+                            child: LoadingWidget(
+                              size: 32,
+                              color: DexColors.primary,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),

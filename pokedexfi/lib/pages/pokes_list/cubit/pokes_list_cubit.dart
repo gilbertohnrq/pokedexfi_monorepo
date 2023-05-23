@@ -11,6 +11,7 @@ class PokesListCubit extends Cubit<PokesListState> {
   int _offset = 0;
   final _limit = 20;
   final _lazyLoadLimit = 5;
+  bool _isFetching = false;
 
   PokesListCubit() : super(const Loading()) {
     getPokemons();
@@ -19,6 +20,9 @@ class PokesListCubit extends Cubit<PokesListState> {
   Future<void> getPokemons() async {
     try {
       emit(const Loading());
+
+      _offset = 0;
+      _pokemons = [];
 
       final result =
           await _getPokemonsUseCase.call(offset: _offset, limit: _limit);
@@ -33,18 +37,30 @@ class PokesListCubit extends Cubit<PokesListState> {
   }
 
   Future<void> fetchMorePokemons() async {
+    if (_isFetching) {
+      return;
+    }
+
+    _isFetching = true;
+
     try {
       emit(LoadingMore(_pokemons));
 
       final additionalPokemons = await _getPokemonsUseCase.call(
           offset: _offset, limit: _lazyLoadLimit);
 
-      _pokemons = [..._pokemons, ...additionalPokemons];
+      final uniqueAdditionalPokemons = additionalPokemons
+          .where((poke) => !_pokemons.contains(poke))
+          .toList();
+
+      _pokemons = [..._pokemons, ...uniqueAdditionalPokemons];
       _offset += _lazyLoadLimit;
 
       emit(Loaded(_pokemons));
     } catch (e) {
       emit(Error(e.toString()));
+    } finally {
+      _isFetching = false;
     }
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokedexfi/core/domain/enums/poke_stats.dart';
 import 'package:pokedexfi/core/extensions/string_extensions.dart';
+import 'package:pokedexfi/core/widgets/loading.dart';
 import 'package:pokedexfi/core/widgets/vector.dart';
 import 'package:pokedexfi/pages/details/args/poke_details_args.dart';
 import 'package:pokedexfi/pages/details/cubit/poke_details_cubit.dart';
@@ -22,7 +23,7 @@ class PokeDetailsPage extends StatefulWidget {
 }
 
 class _PokeDetailsPageState extends State<PokeDetailsPage> {
-  late final PageController _pageController;
+  late PageController _pageController;
   late Poke poke;
   int currentPage = 0;
   final cubit = PokeDetailsCubit();
@@ -30,23 +31,29 @@ class _PokeDetailsPageState extends State<PokeDetailsPage> {
   @override
   void initState() {
     super.initState();
-    poke = widget.args.listPokes[widget.args.index];
+    _pageController = PageController(initialPage: widget.args.index);
+    cubit.init(widget.args.listPokes);
     currentPage = widget.args.index;
-    _pageController = PageController(initialPage: currentPage);
+    poke = cubit.state.pokemons[currentPage];
   }
 
   @override
   void dispose() {
     super.dispose();
     _pageController.dispose();
+    cubit.close();
   }
 
   void nextPokemon() {
-    if (currentPage < widget.args.listPokes.length - 1) {
+    if (currentPage < cubit.state.pokemons.length - 1) {
       currentPage++;
+      final newPoke = cubit.state.pokemons[currentPage];
       setState(() {
-        poke = widget.args.listPokes[currentPage];
+        poke = newPoke;
       });
+      if (currentPage >= cubit.state.pokemons.length - 1) {
+        cubit.getMorePokemonsWhenListIsOver(currentPage);
+      }
       _pageController.jumpToPage(currentPage);
     }
   }
@@ -54,8 +61,9 @@ class _PokeDetailsPageState extends State<PokeDetailsPage> {
   void previousPokemon() {
     if (currentPage > 0) {
       currentPage--;
+      final newPoke = cubit.state.pokemons[currentPage];
       setState(() {
-        poke = widget.args.listPokes[currentPage];
+        poke = newPoke;
       });
       _pageController.jumpToPage(currentPage);
     }
@@ -63,9 +71,20 @@ class _PokeDetailsPageState extends State<PokeDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PokeDetailsCubit, PokeDetailsState>(
+    return BlocConsumer<PokeDetailsCubit, PokeDetailsState>(
       bloc: cubit,
+      listener: (_, state) {},
       builder: (context, state) {
+        if (state is Loading) {
+          return Center(
+            child: Container(
+              color: poke.types.first.color,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: const LoadingWidget(size: 100),
+            ),
+          );
+        }
         return Scaffold(
           backgroundColor: poke.types.first.color,
           extendBodyBehindAppBar: true,
@@ -119,7 +138,7 @@ class _PokeDetailsPageState extends State<PokeDetailsPage> {
                 top: DexSpacings.s76,
                 child: PageView(
                   controller: _pageController,
-                  physics: const ClampingScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   children: [
                     Stack(
                       children: [

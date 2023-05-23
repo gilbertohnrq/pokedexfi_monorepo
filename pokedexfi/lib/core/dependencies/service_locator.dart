@@ -3,10 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:pokedexfi/core/repositories/pokedex_repository.dart';
 import 'package:pokedexfi/core/services/http/http_service.dart';
 import 'package:pokedexfi/core/services/http/http_service_impl.dart';
-import 'package:pokedexfi/core/services/local_storage/local_storage_service.dart';
-import 'package:pokedexfi/core/services/local_storage/local_storage_service_impl.dart';
 import 'package:pokedexfi/core/usecases/get_pokemons_usecase.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../repositories/pokedex_repository_impl.dart';
 import '../services/http/http_interceptors.dart';
@@ -31,12 +28,8 @@ class Locator {
   }
 
   Future<void> createDependencies() async {
-    final SharedPreferences sharedPreferences =
-        await SharedPreferences.getInstance();
     //Services
     getIt.registerSingleton<HttpService>(HttpServiceImpl(dio));
-    getIt.registerSingleton<LocalStorageService>(
-        LocalStorageServiceImpl(sharedPreferences: sharedPreferences));
 
     //Repositories
     getIt.registerFactory<PokedexRepository>(
@@ -44,6 +37,6 @@ class Locator {
 
     //UseCases
     getIt.registerFactory<GetPokemonsUseCase>(
-        () => GetPokemonsUseCase(getIt(), getIt()));
+        () => GetPokemonsUseCase(getIt()));
   }
 }
