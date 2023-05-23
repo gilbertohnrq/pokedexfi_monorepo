@@ -52,4 +52,16 @@ class Stat {
       'stat': stat?.toMap(),
     };
   }
+
+  @override
+  bool operator ==(covariant Stat other) {
+    if (identical(this, other)) return true;
+
+    return other.baseStat == baseStat &&
+        other.effort == effort &&
+        other.stat == stat;
+  }
+
+  @override
+  int get hashCode => baseStat.hashCode ^ effort.hashCode ^ stat.hashCode;
 }

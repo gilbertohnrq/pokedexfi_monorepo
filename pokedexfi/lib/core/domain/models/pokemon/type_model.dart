@@ -35,4 +35,14 @@ class Type {
       'slot': slot,
     };
   }
+
+  @override
+  bool operator ==(covariant Type other) {
+    if (identical(this, other)) return true;
+
+    return other.name == name && other.slot == slot && other.color == color;
+  }
+
+  @override
+  int get hashCode => name.hashCode ^ slot.hashCode ^ color.hashCode;
 }

@@ -22,4 +22,14 @@ class Ability {
       'slot': slot,
     };
   }
+
+  @override
+  bool operator ==(covariant Ability other) {
+    if (identical(this, other)) return true;
+
+    return other.ability == ability && other.slot == slot;
+  }
+
+  @override
+  int get hashCode => ability.hashCode ^ slot.hashCode;
 }

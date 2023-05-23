@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:pokedexfi/core/domain/models/pokemon/ability_model.dart';
 import 'package:pokedexfi/core/domain/models/pokemon/other_model.dart';
 import 'package:pokedexfi/core/domain/models/pokemon/stat_model.dart';
@@ -85,5 +86,32 @@ class Poke {
         'other': other.toMap(),
       },
     };
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Poke &&
+        id == other.id &&
+        name == other.name &&
+        height == other.height &&
+        weight == other.weight &&
+        this.other == other.other &&
+        listEquals(types, other.types) &&
+        listEquals(stats, other.stats) &&
+        listEquals(abilities, other.abilities);
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        name.hashCode ^
+        height.hashCode ^
+        weight.hashCode ^
+        other.hashCode ^
+        types.hashCode ^
+        stats.hashCode ^
+        abilities.hashCode;
   }
 }
