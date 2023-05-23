@@ -19,4 +19,10 @@ class Other {
           map['official-artwork'] as Map<String, dynamic>),
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'official-artwork': officialArtwork.toMap(),
+    };
+  }
 }

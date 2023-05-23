@@ -44,4 +44,12 @@ class Stat {
       stat: Common.fromMap(map['stat'] as Map<String, dynamic>? ?? {}),
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'base_stat': baseStat,
+      'effort': effort,
+      'stat': stat?.toMap(),
+    };
+  }
 }

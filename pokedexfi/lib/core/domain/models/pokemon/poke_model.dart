@@ -71,4 +71,19 @@ class Poke {
           : Other.empty(),
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'abilities': abilities.map((x) => x.toMap()).toList(),
+      'height': height,
+      'id': id,
+      'name': name,
+      'stats': stats.map((x) => x.toMap()).toList(),
+      'types': types.map((x) => x.toMap()).toList(),
+      'weight': weight,
+      'sprites': {
+        'other': other.toMap(),
+      },
+    };
+  }
 }

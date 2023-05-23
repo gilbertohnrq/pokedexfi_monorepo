@@ -10,4 +10,11 @@ class Common {
       url: map['url'] as String? ?? '',
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'url': url,
+    };
+  }
 }

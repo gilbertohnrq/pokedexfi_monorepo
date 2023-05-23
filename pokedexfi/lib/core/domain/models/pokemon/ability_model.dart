@@ -15,4 +15,11 @@ class Ability {
       slot: map['slot'] as int,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'ability': ability.toMap(),
+      'slot': slot,
+    };
+  }
 }

@@ -26,4 +26,13 @@ class Type {
       color: _getColor(typeName),
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'type': {
+        'name': name,
+      },
+      'slot': slot,
+    };
+  }
 }

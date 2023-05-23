@@ -40,8 +40,7 @@ class Locator {
 
     //Repositories
     getIt.registerFactory<PokedexRepository>(
-      () => PokedexRepositoryImpl(getIt(), getIt()),
-    );
+        () => PokedexRepositoryImpl(getIt()));
 
     //UseCases
     getIt.registerFactory<GetPokemonsUseCase>(
