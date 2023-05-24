@@ -90,53 +90,69 @@ class _PokesListPageState extends State<PokesListPage> {
                 const SizedBox(height: DexSpacings.s8),
                 Row(
                   children: [
-                    SearchBar(
-                      controller: _searchController,
-                      trailing: [
-                        if (_searchController.text.isNotEmpty)
-                          IconButton(
-                            onPressed: () {
-                              _searchController.clear();
+                    Flexible(
+                      flex: 6,
+                      child: SearchBar(
+                        controller: _searchController,
+                        trailing: [
+                          if (_searchController.text.isNotEmpty)
+                            IconButton(
+                              onPressed: () {
+                                _searchController.clear();
+                                cubit.getPokemons();
+                              },
+                              icon: const Icon(
+                                Icons.close,
+                                color: DexColors.primary,
+                              ),
+                            )
+                        ],
+                        onChanged: (value) {
+                          _debouncer.run(() {
+                            final searchTerm = value.trim();
+                            if (searchTerm.isEmpty) {
                               cubit.getPokemons();
-                            },
-                            icon: const Icon(
-                              Icons.close,
-                              color: DexColors.primary,
-                            ),
-                          )
-                      ],
-                      onChanged: (value) {
-                        _debouncer.run(() {
-                          final searchTerm = value.trim();
-                          if (searchTerm.isEmpty) {
-                            cubit.getPokemons();
-                          } else {
-                            cubit.searchPokemonByName(searchTerm);
-                          }
-                        });
-                      },
-                      padding: const MaterialStatePropertyAll(
-                        EdgeInsets.only(
-                          bottom: DexSpacings.s2,
-                          left: DexSpacings.s12,
+                            } else {
+                              cubit.searchPokemonByName(searchTerm);
+                            }
+                          });
+                        },
+                        padding: const MaterialStatePropertyAll(
+                          EdgeInsets.only(
+                            bottom: DexSpacings.s2,
+                            left: DexSpacings.s12,
+                          ),
+                        ),
+                        textStyle: MaterialStateProperty.all(
+                          const Text('').body3Regular().style,
+                        ),
+                        leading:
+                            const Icon(Icons.search, color: DexColors.primary),
+                        constraints: BoxConstraints(
+                          maxHeight: orientation == Orientation.portrait
+                              ? size.height * 0.05
+                              : size.height * 0.1,
+                          maxWidth: size.width * 0.7778,
+                        ),
+                        backgroundColor:
+                            const MaterialStatePropertyAll(DexColors.white),
+                        hintText: 'Search',
+                        hintStyle: MaterialStateProperty.all(
+                          const Text('').body3Regular().style,
                         ),
                       ),
-                      textStyle: MaterialStateProperty.all(
-                        const Text('').body3Regular().style,
-                      ),
-                      leading:
-                          const Icon(Icons.search, color: DexColors.primary),
-                      constraints: BoxConstraints(
-                        maxHeight: orientation == Orientation.portrait
-                            ? size.height * 0.05
-                            : size.height * 0.1,
-                        maxWidth: size.width * 0.7778,
-                      ),
-                      backgroundColor:
-                          const MaterialStatePropertyAll(DexColors.white),
-                      hintText: 'Search',
-                      hintStyle: MaterialStateProperty.all(
-                        const Text('').body3Regular().style,
+                    ),
+                    const SizedBox(width: DexSpacings.s8),
+                    Flexible(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          backgroundColor: DexColors.white,
+                        ),
+                        onPressed: () {},
+                        child: const Text('#').body2Regular(
+                          style: const TextStyle(color: DexColors.primary),
+                        ),
                       ),
                     ),
                   ],
@@ -231,9 +247,18 @@ class _PokesListPageState extends State<PokesListPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(state.message),
+                    const Text('Something went wrong!')
+                        .headlineBold(color: DexColors.white),
+                    const SizedBox(height: DexSpacings.s16),
                     ElevatedButton(
-                      child: const Text('Retry'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: DexColors.primary,
+                        backgroundColor: DexColors.white,
+                        textStyle: const Text('')
+                            .body1Regular(color: DexColors.white)
+                            .style,
+                      ),
+                      child: const Text('Try Again'),
                       onPressed: () {
                         cubit.getPokemons();
                       },
