@@ -1,10 +1,10 @@
+![Pokedex Image](https://www.pinclipart.com/picdir/big/318-3180390_pokemon-newbies-pokedex-png-clipart.png)
+
 ### README (PT-BR)
 
 ## Aplicativo Flutter Pokedex
 
 Este é um aplicativo Flutter que utiliza a PokeAPI V2 para exibir informações sobre os Pokémons. O aplicativo foi desenvolvido utilizando o pacote `flutter_bloc` com a abordagem Cubit para o gerenciamento de estados e o pacote `mocktail` para testes unitários.
-
-![Pokedex Image](https://www.pinclipart.com/picdir/big/318-3180390_pokemon-newbies-pokedex-png-clipart.png)
 
 ### Recursos
 
@@ -32,8 +32,6 @@ Para executar o aplicativo, siga os passos abaixo:
 ## Flutter Pokedex App
 
 This is a Flutter app that uses the PokeAPI V2 to display information about Pokémons. The app was developed using the `flutter_bloc` package with the Cubit approach for state management and the `mocktail` package for unit testing.
-
-![Pokedex Image](https://www.pinclipart.com/picdir/big/318-3180390_pokemon-newbies-pokedex-png-clipart.png)
 
 ### Features
 
