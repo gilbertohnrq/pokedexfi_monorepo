@@ -8,6 +8,7 @@ import 'package:pokedexfi/pages/pokes_list/cubit/pokes_list_cubit.dart';
 import 'package:pokedexfi/pages/pokes_list/widgets/poke_card.dart';
 
 import '../../core/domain/models/pokemon/poke_model.dart';
+import '../../core/helpers/debouncer.dart';
 import '../../core/widgets/loading.dart';
 import '../../core/widgets/vector.dart';
 
@@ -20,7 +21,9 @@ class PokesListPage extends StatefulWidget {
 
 class _PokesListPageState extends State<PokesListPage> {
   final PokesListCubit cubit = PokesListCubit();
-  final ScrollController _scrollController = ScrollController();
+  final _scrollController = ScrollController();
+  final _searchController = TextEditingController();
+  final _debouncer = Debounce();
 
   @override
   void initState() {
@@ -33,11 +36,23 @@ class _PokesListPageState extends State<PokesListPage> {
         cubit.fetchMorePokemons();
       }
     });
+
+    _searchController.addListener(() {
+      _debouncer.run(() {
+        final searchTerm = _searchController.text.trim();
+        if (searchTerm.isEmpty) {
+          cubit.getPokemons();
+        } else {
+          cubit.searchPokemonByName(searchTerm);
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -46,164 +61,191 @@ class _PokesListPageState extends State<PokesListPage> {
     final size = MediaQuery.of(context).size;
     final orientation = MediaQuery.of(context).orientation;
 
-    return Scaffold(
-      backgroundColor: DexColors.primary,
-      appBar: DexAppBar(
-        color: DexColors.primary,
-        title: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            DexSpacings.s16,
-            DexSpacings.s16,
-            DexSpacings.s16,
-            DexSpacings.s0,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  const Vector(Vectors.pokeball,
-                      size: 24, color: DexColors.white),
-                  const SizedBox(width: DexSpacings.s16),
-                  const Text('Pokédex').headlineBold(
-                    style: const TextStyle(color: DexColors.white),
-                  ),
-                ],
-              ),
-              const SizedBox(height: DexSpacings.s8),
-              Row(
-                children: [
-                  SearchBar(
-                    onChanged: (value) {},
-                    padding: const MaterialStatePropertyAll(
-                      EdgeInsets.only(
-                        bottom: DexSpacings.s2,
-                        left: DexSpacings.s12,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: DexColors.primary,
+        appBar: DexAppBar(
+          color: DexColors.primary,
+          title: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              DexSpacings.s16,
+              DexSpacings.s16,
+              DexSpacings.s16,
+              DexSpacings.s0,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    const Vector(Vectors.pokeball,
+                        size: 24, color: DexColors.white),
+                    const SizedBox(width: DexSpacings.s16),
+                    const Text('Pokédex').headlineBold(
+                      style: const TextStyle(color: DexColors.white),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: DexSpacings.s8),
+                Row(
+                  children: [
+                    SearchBar(
+                      controller: _searchController,
+                      trailing: [
+                        if (_searchController.text.isNotEmpty)
+                          IconButton(
+                            onPressed: () {
+                              _searchController.clear();
+                              cubit.getPokemons();
+                            },
+                            icon: const Icon(
+                              Icons.close,
+                              color: DexColors.primary,
+                            ),
+                          )
+                      ],
+                      onChanged: (value) {
+                        _debouncer.run(() {
+                          final searchTerm = value.trim();
+                          if (searchTerm.isEmpty) {
+                            cubit.getPokemons();
+                          } else {
+                            cubit.searchPokemonByName(searchTerm);
+                          }
+                        });
+                      },
+                      padding: const MaterialStatePropertyAll(
+                        EdgeInsets.only(
+                          bottom: DexSpacings.s2,
+                          left: DexSpacings.s12,
+                        ),
+                      ),
+                      textStyle: MaterialStateProperty.all(
+                        const Text('').body3Regular().style,
+                      ),
+                      leading:
+                          const Icon(Icons.search, color: DexColors.primary),
+                      constraints: BoxConstraints(
+                        maxHeight: orientation == Orientation.portrait
+                            ? size.height * 0.05
+                            : size.height * 0.1,
+                        maxWidth: size.width * 0.7778,
+                      ),
+                      backgroundColor:
+                          const MaterialStatePropertyAll(DexColors.white),
+                      hintText: 'Search',
+                      hintStyle: MaterialStateProperty.all(
+                        const Text('').body3Regular().style,
                       ),
                     ),
-                    textStyle: MaterialStateProperty.all(
-                      const Text('').body3Regular().style,
-                    ),
-                    leading: const Icon(Icons.search, color: DexColors.primary),
-                    constraints: BoxConstraints(
-                      maxHeight: orientation == Orientation.portrait
-                          ? size.height * 0.05
-                          : size.height * 0.1,
-                      maxWidth: size.width * 0.7778,
-                    ),
-                    backgroundColor:
-                        const MaterialStatePropertyAll(DexColors.white),
-                    hintText: 'Search',
-                    hintStyle: MaterialStateProperty.all(
-                      const Text('').body3Regular().style,
-                    ),
-                  ),
-                ],
-              )
-            ],
+                  ],
+                )
+              ],
+            ),
           ),
         ),
-      ),
-      body: BlocBuilder<PokesListCubit, PokesListState>(
-        bloc: cubit,
-        builder: (context, state) {
-          if (state is Initial || state is Loading) {
-            return const Center(child: LoadingWidget());
-          }
+        body: BlocBuilder<PokesListCubit, PokesListState>(
+          bloc: cubit,
+          builder: (context, state) {
+            if (state is Initial || state is Loading) {
+              return const Center(child: LoadingWidget());
+            }
 
-          if (state is LoadingMore || state is Loaded) {
-            List<Poke> pokemons = state is LoadingMore
-                ? state.pokemons
-                : (state as Loaded).pokemons;
-            return RefreshIndicator.adaptive(
-              backgroundColor: DexColors.white,
-              color: DexColors.primary,
-              onRefresh: () async => await cubit.getPokemons(),
-              child: Padding(
-                padding: const EdgeInsets.all(DexSpacings.s4),
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: DexElevation.innerShadow1,
-                        borderRadius: BorderRadius.circular(DexRadius.r8),
-                        color: DexColors.white,
+            if (state is LoadingMore || state is Loaded) {
+              List<Poke> pokemons = state is LoadingMore
+                  ? state.pokemons
+                  : (state as Loaded).pokemons;
+              return RefreshIndicator.adaptive(
+                backgroundColor: DexColors.white,
+                color: DexColors.primary,
+                onRefresh: () async => await cubit.getPokemons(),
+                child: Padding(
+                  padding: const EdgeInsets.all(DexSpacings.s4),
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          boxShadow: DexElevation.innerShadow1,
+                          borderRadius: BorderRadius.circular(DexRadius.r8),
+                          color: DexColors.white,
+                        ),
                       ),
-                    ),
-                    GridView.builder(
-                      controller: _scrollController,
-                      physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.only(
-                        left: DexSpacings.s12,
-                        right: DexSpacings.s12,
-                        top: DexSpacings.s24,
-                        bottom: state is LoadingMore
-                            ? DexSpacings.s56
-                            : DexSpacings.s24,
-                      ),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: DexSpacings.s8,
-                        mainAxisSpacing: DexSpacings.s8,
-                      ),
-                      itemCount: pokemons.length,
-                      itemBuilder: (context, index) {
-                        final pokemon = pokemons[index];
+                      GridView.builder(
+                        controller: _scrollController,
+                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.only(
+                          left: DexSpacings.s12,
+                          right: DexSpacings.s12,
+                          top: DexSpacings.s24,
+                          bottom: state is LoadingMore
+                              ? DexSpacings.s56
+                              : DexSpacings.s24,
+                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: DexSpacings.s8,
+                          mainAxisSpacing: DexSpacings.s8,
+                        ),
+                        itemCount: pokemons.length,
+                        itemBuilder: (context, index) {
+                          final pokemon = pokemons[index];
 
-                        return PokeCard(
-                          pokemon,
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                              Routes.detailsPage.route,
-                              arguments: PokeDetailsArgs(
-                                listPokes: pokemons,
-                                index: index,
+                          return PokeCard(
+                            pokemon,
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                Routes.detailsPage.route,
+                                arguments: PokeDetailsArgs(
+                                  listPokes: pokemons,
+                                  index: index,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      if (state is LoadingMore)
+                        const Positioned.fill(
+                          bottom: DexSpacings.s8,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: EdgeInsets.only(top: DexSpacings.s72),
+                              child: LoadingWidget(
+                                size: 32,
+                                color: DexColors.primary,
                               ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    if (state is LoadingMore)
-                      const Positioned.fill(
-                        bottom: DexSpacings.s8,
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Padding(
-                            padding: EdgeInsets.only(top: DexSpacings.s72),
-                            child: LoadingWidget(
-                              size: 32,
-                              color: DexColors.primary,
                             ),
                           ),
                         ),
-                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            if (state is Error) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(state.message),
+                    ElevatedButton(
+                      child: const Text('Retry'),
+                      onPressed: () {
+                        cubit.getPokemons();
+                      },
+                    ),
                   ],
                 ),
-              ),
-            );
-          }
+              );
+            }
 
-          if (state is Error) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(state.message),
-                  ElevatedButton(
-                    child: const Text('Retry'),
-                    onPressed: () {
-                      cubit.getPokemons();
-                    },
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return const Center(child: Text('Empty'));
-        },
+            return const Center(child: Text('Empty'));
+          },
+        ),
       ),
     );
   }

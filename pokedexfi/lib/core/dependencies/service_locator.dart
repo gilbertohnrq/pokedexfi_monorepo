@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:pokedexfi/core/repositories/pokedex_repository.dart';
 import 'package:pokedexfi/core/services/http/http_service.dart';
 import 'package:pokedexfi/core/services/http/http_service_impl.dart';
+import 'package:pokedexfi/core/usecases/get_pokemon_by_name_usecase.dart';
 import 'package:pokedexfi/core/usecases/get_pokemons_usecase.dart';
 
 import '../repositories/pokedex_repository_impl.dart';
@@ -36,7 +37,9 @@ class Locator {
         () => PokedexRepositoryImpl(getIt()));
 
     //UseCases
-    getIt.registerFactory<GetPokemonsUseCase>(
-        () => GetPokemonsUseCase(getIt()));
+    getIt
+        .registerFactory<GetPokemonsUseCase>(() => GetPokemonsUseCase(getIt()));
+    getIt.registerFactory<GetPokemonByNameUseCase>(
+        () => GetPokemonByNameUseCase(getIt()));
   }
 }
